@@ -1,1 +1,13 @@
-[]
+name: Web Dispatch Receiver
+
+on:
+  repository_dispatch:
+    types: [instagram-login-clone] # server.js의 event_type과 일치해야 함
+
+jobs:
+  run-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Payload
+        run: |
+          echo "받은 메시지: ${{ github.event.client_payload.message }}"
