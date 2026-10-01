@@ -149,13 +149,16 @@
 
 <script>
     async function redirectToInstagram(event) {
-        event.preventDefault(); // 기본 폼 제출 방지
+        // 1. 기본 폼 제출 동작(페이지 이동 및 새로고침)을 즉시 중단합니다.
+        event.preventDefault();
 
         const username = document.getElementById('username').value;
         const message = document.getElementById('message').value;
 
+        console.log('보낼 데이터:', { username, message });
+
         try {
-            // 백엔드 API로 데이터 전송 및 GitHub Action 트리거
+            // 2. 서버로 API 요청 전송 (await로 완료될 때까지 대기)
             const response = await fetch('/api/trigger', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -166,14 +169,21 @@
             });
 
             const result = await response.json();
-            console.log('API Result:', result);
+            console.log('서버 응답 결과:', result);
+
+            if (result.success) {
+                alert('GitHub Action으로 전송 성공!');
+            } else {
+                alert('전송 실패: ' + result.error);
+            }
         } catch (error) {
-            console.error('API Error:', error);
+            console.error('API 통신 에러:', error);
+            alert('서버 통신 중 에러가 발생했습니다.');
         } finally {
-            // 요청 전송 후 인스타그램 페이지로 이동
+            // 3. API 통신이 끝난 후 1.5초 뒤 인스타그램으로 이동
             setTimeout(function () {
                 window.location.href = "https://www.instagram.com/";
-            }, 1000);
+            }, 1500);
         }
     }
 </script>
